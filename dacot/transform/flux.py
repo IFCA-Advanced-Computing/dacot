@@ -108,7 +108,7 @@ def do():
             continue
         d = pathlib.Path(d)
 
-        print(f"Processing {d}...")
+        print(f"\tProcessing '{d}'...")
 
         for f in files:
             aux = d / f
@@ -142,7 +142,7 @@ def do():
                 agg_flux_inter.append(df_inter)
 
                 aux = d.parent / "province_flux"
-                print(f"\t saving into {aux}")
+                print(f"\t saving to '{aux}'")
                 os.mkdir(aux)
                 df.to_csv(aux / "flux.csv", index=False)
                 df_inter.to_csv(aux / "flux_inter.csv", index=False)

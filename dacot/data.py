@@ -30,6 +30,11 @@ URL = "https://www.ine.es/covid/datos_disponibles.zip"
 
 def _download(force=False):
     print("Downloading data...")
+
+    if PATHS.inedata.exists() and not force:
+        print("\t data already downloaded, not overwriting it (force=False)")
+        return
+
     resp = requests.get(URL)
     with open(PATHS.inedata, 'wb') as f:
         f.write(resp.content)
@@ -105,6 +110,6 @@ def _prepare():
         print(f"\t data saved into {PATHS.outdir}")
 
 
-def do():
-#    _download()
+def do(force=False):
+    _download(force=force)
     _prepare()

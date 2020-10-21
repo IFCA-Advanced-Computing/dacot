@@ -15,16 +15,59 @@
 
 import datetime
 import pathlib
+import os
+import shutil
 
-now = datetime.datetime.now().strftime("%Y%m%d%H%M%S%s")
+from dacot import version
+
+now = datetime.datetime.now().strftime(f"%Y%m%d-{version.__version__}")
 
 
 class Paths():
-    base = pathlib.Path("data")
-    inedata = base / "raw" / f"datos_disponibles_{now}.zip"
-    inedata = base / "raw" / f"datos_disponibles.zip"
-    outdir = base / "output" / f"output_{now}"
-    interim = base / "interim"
+    def __init__(self):
+        self._base = pathlib.Path("data")
 
+    @property
+    def base(self):
+        return self._base
+
+    @base.setter
+    def base(self, val):
+        self._base = pathlib.Path(val)
+
+    @property
+    def inedata(self):
+        return self.base / "raw" / f"datos_disponibles_{now}.zip"
+
+    @property
+    def outdir(self):
+        return self.base / "output" / f"output_{now}"
+
+    @property
+    def interim(self):
+        return self. base / "interim"
+
+    def __str__(self):
+        return f"""
+                 Base path: {self.base}
+    INE data download path: {self.inedata}
+         Interim data path: {self.interim}
+     Output directory path: {self.outdir}
+    """
 
 PATHS = Paths()
+
+
+def check_dirs(regenerate=False):
+    print("Checking directories...")
+    print(PATHS)
+    PATHS.base.exists() or os.makedirs(PATHS.base)
+    PATHS.interim.exists() or os.makedirs(PATHS.interim)
+
+    if PATHS.outdir.exists() and not regenerate:
+        print(f"\t'{PATHS.outdir}' exists, not overwriting it")
+        return False
+    elif PATHS.outdir.exists() and regenerate:
+        print(f"\t'{PATHS.outdir}' exists, deleting it")
+        shutil.rmtree(PATHS.outdir, ignore_errors=True)
+    return True
