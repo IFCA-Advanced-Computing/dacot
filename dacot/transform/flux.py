@@ -57,28 +57,58 @@ def convert_flux(filename, ocell, dcell, ine_cells):
 
     ocell = ocell.lower()
     dcell = dcell.lower()
-    df["province origin"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[1])
-    df["province id origin"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[0])
-    df["province destination"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[1])
-    df["province id destination"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[0])
+    df["province origin"] = df[ocell].apply(
+        lambda x: ine_cells.get(x.strip())[1]
+    )
+    df["province id origin"] = df[ocell].apply(
+        lambda x: ine_cells.get(x.strip())[0]
+    )
+    df["province destination"] = df[dcell].apply(
+        lambda x: ine_cells.get(x.strip())[1]
+    )
+    df["province id destination"] = df[dcell].apply(
+        lambda x: ine_cells.get(x.strip())[0]
+    )
 
-    agg = {"province id origin": max, "province id destination": max, "flujo": sum}
-    grouped = df.groupby(["province origin", "province destination"]).aggregate(agg).reset_index()
-    df_intra = grouped.loc[grouped["province origin"] == grouped["province destination"]]
+    agg = {
+        "province id origin": max,
+        "province id destination": max,
+        "flujo": sum
+    }
+    grouped = df.groupby(
+        [
+            "province origin",
+            "province destination"
+        ]
+    ).aggregate(agg).reset_index()
+    sel = grouped["province origin"] == grouped["province destination"]
+    df_intra = grouped.loc[sel]
     df_intra = df_intra[["province origin", "province id origin", "flujo"]]
     df_intra.columns = ["province", "province id", "flux"]
     df_intra = df_intra.reset_index(drop=True)
 #    print("-")
 #    print(df_intra.head())
 #    print("-")
-    df_inter = grouped.loc[grouped["province origin"] != grouped["province destination"]]
-    df_inter.columns = ["province origin", "province destination", "province id origin", "province id destination", "flux"]
+    sel = grouped["province origin"] != grouped["province destination"]
+    df_inter = grouped.loc[sel]
+    df_inter.columns = [
+        "province origin",
+        "province destination",
+        "province id origin",
+        "province id destination",
+        "flux"
+    ]
     df_inter = df_inter.reset_index(drop=True)
 #    print("-")
 #    print(df_inter.head())
 #    print("-")
 
-    cols = ["province origin", "province id origin", "province destination", "province id destination"]
+    cols = [
+        "province origin",
+        "province id origin",
+        "province destination",
+        "province id destination"
+    ]
     for c in df.columns:
         if c.startswith("unnamed") or c in cols:
             continue
