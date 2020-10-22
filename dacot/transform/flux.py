@@ -34,9 +34,9 @@ def convert(filename, cell, ine_cells):
 
     cell = cell.lower()
     df["province"] = df[cell].apply(lambda x: ine_cells.get(x.strip())[1])
-    df["pid"] = df[cell].apply(lambda x: ine_cells.get(x.strip())[0])
+    df["province id"] = df[cell].apply(lambda x: ine_cells.get(x.strip())[0])
 
-    cols = ["province", "pid"]
+    cols = ["province", "province id"]
     for c in df.columns:
         if c.startswith("unnamed") or c in cols:
             continue
@@ -57,28 +57,28 @@ def convert_flux(filename, ocell, dcell, ine_cells):
 
     ocell = ocell.lower()
     dcell = dcell.lower()
-    df["prv orig"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[1])
-    df["pid orig"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[0])
-    df["prv dest"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[1])
-    df["pid dest"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[0])
+    df["province origin"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[1])
+    df["province id origin"] = df[ocell].apply(lambda x: ine_cells.get(x.strip())[0])
+    df["province destination"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[1])
+    df["province id destination"] = df[dcell].apply(lambda x: ine_cells.get(x.strip())[0])
 
-    agg = {"pid orig": max, "pid dest": max, "flujo": sum}
-    grouped = df.groupby(["prv orig", "prv dest"]).aggregate(agg).reset_index()
-    df_intra = grouped.loc[grouped["prv orig"] == grouped["prv dest"]]
-    df_intra = df_intra[["prv orig", "pid orig", "flujo"]]
-    df_intra.columns = ["province", "pid", "flux"]
+    agg = {"province id origin": max, "province id destination": max, "flujo": sum}
+    grouped = df.groupby(["province origin", "province destination"]).aggregate(agg).reset_index()
+    df_intra = grouped.loc[grouped["province origin"] == grouped["province destination"]]
+    df_intra = df_intra[["province origin", "province id origin", "flujo"]]
+    df_intra.columns = ["province", "province id", "flux"]
     df_intra = df_intra.reset_index(drop=True)
 #    print("-")
 #    print(df_intra.head())
 #    print("-")
-    df_inter = grouped.loc[grouped["prv orig"] != grouped["prv dest"]]
-    df_inter.columns = ["prv orig", "prv dest", "pid orig", "pid dest", "flux"]
+    df_inter = grouped.loc[grouped["province origin"] != grouped["province destination"]]
+    df_inter.columns = ["province origin", "province destination", "province id origin", "province id destination", "flux"]
     df_inter = df_inter.reset_index(drop=True)
 #    print("-")
 #    print(df_inter.head())
 #    print("-")
 
-    cols = ["prv orig", "pid orig", "prv dest", "pid dest"]
+    cols = ["province origin", "province id origin", "province destination", "province id destination"]
     for c in df.columns:
         if c.startswith("unnamed") or c in cols:
             continue
@@ -149,7 +149,7 @@ def do():
                 df_intra.to_csv(aux / "flux_intra.csv", index=False)
 
     df = pandas.concat(agg_flux)
-    df = df.sort_values(["date", "prv orig"]).reset_index(drop=True)
+    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
     df.to_csv(PATHS.outdir / "province_flux.csv", index=False)
 
     df = pandas.concat(agg_flux_intra)
@@ -157,5 +157,5 @@ def do():
     df.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
 
     df = pandas.concat(agg_flux_inter)
-    df = df.sort_values(["date", "prv orig"]).reset_index(drop=True)
+    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
     df.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
