@@ -92,7 +92,7 @@ def _prepare():
             shutil.move(f, aux)
 
         # Now move November data
-        date = "2020-11"
+        date = "2019-11"
         aux = os.path.join(outdir, date, "original")
         if not os.path.exists(aux):
             os.makedirs(aux)
