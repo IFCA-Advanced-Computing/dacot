@@ -47,7 +47,7 @@ def convert(filename, cell, ine_cells):
     return df
 
 
-def convert_flux(filename, ocell, dcell, ine_cells):
+def convert_covid_flux(filename, ocell, dcell, ine_cells):
     df = pandas.read_csv(
         filename,
         sep=";",
@@ -119,7 +119,50 @@ def convert_flux(filename, ocell, dcell, ine_cells):
     return df, df_intra, df_inter
 
 
-def do():
+def convert_ine_flux(filename):
+    df = pandas.read_excel(filename)
+    df.columns = [
+        "region origin",
+        "province origin",
+        "municipality id origin",
+        "municipality",
+        "region destination",
+        "province destination",
+        "municipality id destination",
+        "municipality destination",
+        "flux"
+    ]
+
+    prov = pandas.read_csv(PATHS.interim / "provincias-ine.csv",
+                           sep=";")
+    for p in df["province origin"].unique():
+        # print("-", p)
+        df.loc[
+            df["province origin"] == p,
+            ("province id origin", "region id origin")
+        ] = (
+            prov.loc[prov["provincia"] == p][
+                ["id provincia", "id auto"]
+            ].values[0]
+        )
+
+    for p in df["province destination"].unique():
+        if p not in prov["provincia"].values:
+            print("-",p)
+            continue
+        df.loc[
+            df["province destination"] == p,
+            ("province id destination", "region id destination")
+        ] = (
+            prov.loc[prov["provincia"] == p][
+                ["id provincia", "id auto"]
+            ].values[0]
+        )
+
+    return df
+
+
+def do_covid():
     print("Transforming cell data into provinces...")
     ine_cells = pandas.read_csv(PATHS.interim / "celdas.csv")
 
@@ -155,10 +198,12 @@ def do():
             elif f.startswith("FlujosDestino100"):
                 ocell = "CELDA_ORIGEN"
                 dcell = "CELDA_DESTINO"
-                df, df_intra, df_inter = convert_flux(aux,
-                                                      ocell,
-                                                      dcell,
-                                                      ine_cells)
+                df, df_intra, df_inter = convert_covid_flux(
+                    aux,
+                    ocell,
+                    dcell,
+                    ine_cells
+                )
 
                 date = pandas.to_datetime(d.parent.name)
 
@@ -189,3 +234,49 @@ def do():
     df = pandas.concat(agg_flux_inter)
     df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
     df.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
+
+
+def do_mobility():
+    print("Transforming cell data into provinces...")
+    ine_cells = pandas.read_csv(PATHS.interim / "celdas.csv")
+
+    ine_cells = dict([
+        (i, (j, k))
+        for i, j, k in ine_cells.groupby(
+            ["ID_GRUPO", "CPRO", "NPRO"]
+        ).groups.keys()
+    ])
+
+    agg_flux = []
+    agg_flux_intra = []
+    agg_flux_inter = []
+    for d, _, files in os.walk(PATHS.outdir):
+        if not d.endswith("original"):
+            continue
+        d = pathlib.Path(d)
+
+        print(f"\tProcessing '{d}'...")
+
+        for f in files:
+            aux = d / f
+            print(f)
+
+            if f.startswith("Tabla 1.3"):
+                df, df_intra, df_inter = convert_ine_flux(aux)
+#                df = pandas.read_excel(aux)
+#                print(df.head())
+#                pass
+            elif f.startswith("Tabla 1.5"):
+                pass
+        break
+#    df = pandas.concat(agg_flux)
+#    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
+#    df.to_csv(PATHS.outdir / "province_flux.csv", index=False)
+#
+#    df = pandas.concat(agg_flux_intra)
+#    df = df.sort_values(["date", "province"]).reset_index(drop=True)
+#    df.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
+#
+#    df = pandas.concat(agg_flux_inter)
+#    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
+#    df.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)

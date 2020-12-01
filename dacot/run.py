@@ -48,6 +48,20 @@ parser.add_argument(
     help="Base directory to use (defaults to ./data)"
 )
 
+parser.add_argument(
+    "experiment",
+    type=str,
+    choices=("mobility", "covid"),
+    default=None,
+    help="""Download INE mobility data or INE COVID mobility data, choices are:
+
+    mobility: Download data from the INE Mobility study, available at
+              https://www.ine.es/experimental/movilidad/experimental_em3.htm
+       covid: Download data from the DataCOVID INE study, available at
+              https://www.ine.es/covid/covid_movilidad.htm
+    """,
+)
+
 
 def main():
     print(f"dacot version {version.__version__}")
@@ -58,14 +72,28 @@ def main():
     if args.base:
         utils.PATHS.base = args.base
 
+    print(args.experiment)
+
+    if args.experiment == "mobility":
+        utils.PATHS.experiment = "mobility_ine"
+    else:
+        utils.PATHS.experiment = "covid_ine"
+
     if not utils.check_dirs(regenerate=regenerate):
         sys.exit(1)
 
-    print("-" * 80)
-    data.do(force=force)
-    print("-" * 80)
-    flux.do()
-    print("-" * 80)
+    if args.experiment == "mobility":
+        print("-" * 80)
+        data.do_ine_mobility(force=force)
+        print("-" * 80)
+        flux.do_mobility()
+        print("-" * 80)
+    else:
+        print("-" * 80)
+        data.do_covid_mobility(force=force)
+        print("-" * 80)
+        flux.do_covid()
+        print("-" * 80)
 
 
 if __name__ == "__main__":
