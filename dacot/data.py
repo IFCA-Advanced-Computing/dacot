@@ -15,9 +15,10 @@
 
 import os
 import os.path
+import pathlib
 import re
-import shutil
 import tempfile
+import urllib.parse
 import zipfile
 
 import requests
@@ -25,35 +26,47 @@ import requests
 from dacot import utils
 
 PATHS = utils.PATHS
-URL = "https://www.ine.es/covid/datos_disponibles.zip"
+URLS_COVID = ["https://www.ine.es/covid/datos_disponibles.zip"]
+URLS_INE = [
+    "https://www.ine.es/experimental/movilidad/"
+    "movilidad_cotidiana_junio_octubre.zip",
+
+    "https://www.ine.es/experimental/movilidad/"
+    "movilidad_cotidiana_noviembre.zip",
+]
 
 
-def _download(force=False):
+def _download(urls, force=False):
     print("Downloading data...")
 
-    if PATHS.inedata.exists() and not force:
-        print("\t data already downloaded, not overwriting it (force=False)")
-        return
+    for url in urls:
+        aux = urllib.parse.urlparse(url)
+        f = os.path.basename(aux.path)
 
-    resp = requests.get(URL)
-    with open(PATHS.inedata, 'wb') as f:
-        f.write(resp.content)
+        if (PATHS.rawdata / f).exists() and not force:
+            print(f"\t {url} already downloaded, not overwriting it "
+                  "(force=False)")
+            return
+
+        print(f"\t downloading {url}")
+        f = PATHS.rawdata / f
+        resp = requests.get(url)
+        with open(f, 'wb') as f:
+            f.write(resp.content)
 
 
-def _prepare():
+def _prepare_covid():
     print("Preparing data...")
 
     with tempfile.TemporaryDirectory(dir=PATHS.base) as tmpdir:
-        # Extract zip container
-        with zipfile.ZipFile(PATHS.inedata, 'r') as zf:
-            zf.extractall(tmpdir)
+        tmpdir = pathlib.Path(tmpdir)
+        for zf in PATHS.rawdata.glob('**/*.zip'):
+            # Extract zip container
+            with zipfile.ZipFile(zf, 'r') as zf:
+                zf.extractall(tmpdir)
 
         # Extract individual zip files
-        for f in os.listdir(tmpdir):
-            if not f.endswith(".zip"):
-                continue
-
-            f = os.path.join(tmpdir, f)
+        for f in tmpdir.glob('**/*.zip'):
             with zipfile.ZipFile(f) as zf:
                 zf.extractall(tmpdir)
 
@@ -70,46 +83,98 @@ def _prepare():
 
         # Now prepare output
 
-        outdir = os.path.join(tmpdir, PATHS.outdir.name)
-        os.mkdir(outdir)
+        outdir = tmpdir / PATHS.outdir.name
+        outdir.mkdir()
 
         r = re.compile(r".*_([0-9]{2}[A-Z]{3}).*\.csv$")
-        for f in os.listdir(tmpdir):
-            aux = r.search(f)
+
+        # if we use the generator we will get also the new files being created
+        # therefore the loop will fail.
+        csvfiles = list(tmpdir.glob("**/*csv"))
+        for f in csvfiles:
+            aux = r.search(f.as_posix())
             if not aux:
                 continue
-
-            f = os.path.join(tmpdir, f)
 
             day = aux.group(1)[:2]
             month = aux.group(1)[2:]
             month = datemap.get(month)
 
             date = f"2020-{month}-{day}"
-            aux = os.path.join(outdir, date, "original")
-            if not os.path.exists(aux):
-                os.makedirs(aux)
-            shutil.move(f, aux)
+            aux = outdir / date / "original" / f.name
+            aux.parent.mkdir(parents=True, exist_ok=True)
+            f.rename(aux)
 
         # Now move November data
         date = "2019-11"
-        aux = os.path.join(outdir, date, "original")
-        if not os.path.exists(aux):
-            os.makedirs(aux)
+        aux = outdir / date / "original"
+        aux.mkdir(parents=True, exist_ok=True)
+
         files = [
-            "FlujosDestino100+_M1_NOV.csv",
-            "FlujosOrigen100+_M1_NOV.csv",
+            "Flujos+15_O-D_M1_NOV.csv",
             "PobxCeldasDestinoM1_NOV.csv",
-            "PobxCeldasOrigenM1_NOV.csv"
+            "PobxCeldasOrigenM1_NOV.csv",
         ]
         for f in files:
-            f = os.path.join(tmpdir, f)
-            shutil.move(f, aux)
+            f = tmpdir / "Noviembre 2019" / f
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.rename(aux / f.name)
 
-        shutil.move(outdir, PATHS.outdir)
+        outdir.rename(PATHS.outdir)
+
+
+def _prepare_ine():
+    print("Preparing data...")
+
+    with tempfile.TemporaryDirectory(dir=PATHS.base) as tmpdir:
+        tmpdir = pathlib.Path(tmpdir)
+
+        for zf in PATHS.rawdata.glob('**/*.zip'):
+            # Extract zip container
+            with zipfile.ZipFile(zf, 'r') as zf:
+                zf.extractall(tmpdir)
+
+        # Extract individual zip files
+        for f in os.listdir(tmpdir):
+            if not f.endswith(".zip"):
+                continue
+
+            f = os.path.join(tmpdir, f)
+            with zipfile.ZipFile(f) as zf:
+                zf.extractall(tmpdir)
+
+        # Now prepare output
+
+        outdir = tmpdir / PATHS.outdir.name
+        outdir.mkdir()
+
+        r = re.compile(r".*_([0-9]{2}[0-9]{2})\.xlsx$")
+
+        # if we use the generator we will get also the new files being created
+        # therefore the loop will fail.
+        lsfiles = list(tmpdir.glob('**/Tabla*.xlsx'))
+        for f in lsfiles:
+            aux = r.search(f.as_posix())
+            if not aux:
+                continue
+
+            day = aux.group(1)[:2]
+            month = aux.group(1)[2:]
+
+            date = f"2020-{month}-{day}"
+            aux = outdir / date / "original" / f.name
+            aux.parent.mkdir(parents=True, exist_ok=True)
+            f.rename(aux)
+
+        outdir.rename(PATHS.outdir)
         print(f"\t data saved into {PATHS.outdir}")
 
 
-def do(force=False):
-    _download(force=force)
-    _prepare()
+def do_covid_mobility(force=False):
+    _download(URLS_COVID, force=force)
+    _prepare_covid()
+
+
+def do_ine_mobility(force=False):
+    _download(URLS_INE, force=force)
+    _prepare_ine()

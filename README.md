@@ -1,12 +1,15 @@
 # dacot: DataCOVID Transformer
 
-`dacot` genera nuevos datasets a partir de los datasets disponibles del
-proyecto DataCOVID del INE (https://www.ine.es/covid/covid_movilidad.htm). Se
-recomienda leer y entender la información suministrada por el INE.
+`dacot` genera nuevos datasets a partir de los datos disponibles en los
+[Estudios de movilidad a partir de la telefonía móvil"](https://www.ine.es/experimental/movilidad/experimental_em.htm)
+realizados por el Instituto Nacional de Estadística. Se recomienda leer y
+entender la información suministrada por el INE para entender el alcance de
+dichos estudios.
 
 Cada ejecución de `dacot` genera un nuevo directorio dentro de `data/output/`
-con el formato `output_YYYYMMDD-VERSION` donde:
+con el formato `output_ESTUDIO_YYYYMMDD-VERSION` donde:
 
+ - `ESTUDIO` se corresponde al estudio correspondiente (`em2` o `em3`)
  - `YYYY` se corresponde al año (2020)
  - `MM` se corresponde al mes (10)
  - `DD` se corresponde al día (01)
@@ -19,14 +22,9 @@ se encuentran dos directorios adicionales:
  - `original`: contiene los ficheros originales del INE, sin modificaciones.
  - `province flux`: contiene los datasets generados con información de
    provincia, con los siguientes ficheros:
-     - `flux.csv`: Dataset similar a FlujosDestino100+ pero con información de
-       provincia.
-     - `flux-inter.csv`: Flujos (> 100 personas) interprovinciales
-     - `flux-intra.csv`: Flujos (> 100 personas) intraprovinciales
-     - `pop_dest.csv`: Dataset similar a PobxCeldasDestinoM1 con información de
-       provincia
-     - `pop_orig.csv`: Dataset similar a PobxCeldasOrigenM1 con información de
-       pronvincia
+     - `flux.csv`: Flujos (> 15 personas) con información provincial.
+     - `flux-inter.csv`: Flujos (> 15 personas) interprovinciales.
+     - `flux-intra.csv`: Flujos (> 15 personas) intraprovinciales.
 
 Asimismo, estos ficheros se concatenan y se guardan el el directorio de salida.
 
@@ -42,7 +40,7 @@ Se recomienda utilizar un `virtualenv`:
 
 Una vez instalado se puede ejecutar el programa `dacot`:
 
-    $ dacot
+    $ dacot em2
     dacot version 0.0.1.dev1
     Checking directories...
 
