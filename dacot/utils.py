@@ -26,6 +26,7 @@ now = datetime.datetime.now().strftime(f"%Y%m%d-{version.__version__}")
 class Paths():
     def __init__(self):
         self._base = pathlib.Path("data")
+        self._experiment = ""
 
     @property
     def base(self):
@@ -36,12 +37,20 @@ class Paths():
         self._base = pathlib.Path(val)
 
     @property
-    def inedata(self):
-        return self.base / "raw" / f"datos_disponibles_{now}.zip"
+    def experiment(self):
+        return self._experiment
+
+    @experiment.setter
+    def experiment(self, val):
+        self._experiment = f"_{val}"
+
+    @property
+    def rawdata(self):
+        return self.base / "raw" / f"raw{self.experiment}_{now}"
 
     @property
     def outdir(self):
-        return self.base / "output" / f"output_{now}"
+        return self.base / "output" / f"output{self.experiment}_{now}"
 
     @property
     def interim(self):
@@ -50,7 +59,7 @@ class Paths():
     def __str__(self):
         return f"""
                  Base path: {self.base}
-    INE data download path: {self.inedata}
+    INE data download path: {self.rawdata}
          Interim data path: {self.interim}
      Output directory path: {self.outdir}
     """
@@ -63,6 +72,7 @@ def check_dirs(regenerate=False):
     print(PATHS)
     PATHS.base.exists() or os.makedirs(PATHS.base)
     PATHS.interim.exists() or os.makedirs(PATHS.interim)
+    PATHS.rawdata.exists() or os.makedirs(PATHS.rawdata)
 
     if PATHS.outdir.exists() and not regenerate:
         print(f"\t'{PATHS.outdir}' exists, not overwriting it")

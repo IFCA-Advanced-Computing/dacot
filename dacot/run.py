@@ -48,6 +48,20 @@ parser.add_argument(
     help="Base directory to use (defaults to ./data)"
 )
 
+parser.add_argument(
+    "experiment",
+    type=str,
+    choices=("em3", "em2", "covid"),
+    default=None,
+    help="""Download INE mobility data or INE COVID mobility data, choices are:
+
+    em3: Download data from the INE Mobility study, available at
+              https://www.ine.es/experimental/movilidad/experimental_em3.htm
+    em2, covid: Download data from the DataCOVID INE study, available at
+              https://www.ine.es/covid/covid_movilidad.htm
+    """,
+)
+
 
 def main():
     print(f"dacot version {version.__version__}")
@@ -58,14 +72,32 @@ def main():
     if args.base:
         utils.PATHS.base = args.base
 
+    if args.experiment in ("mobility", "em3"):
+        print("Using EM3 data (24/06/2020 to 30/12/2020)")
+        print("Check https://www.ine.es/experimental/movilidad/"
+              "experimental_em3.htm for more details")
+        utils.PATHS.experiment = "em3"
+    else:
+        print("Using EM2 (COVID) data (16/03/2020 to 20/06/2020)")
+        print("Check https://www.ine.es/covid/covid_movilidad.htm "
+              "for more details")
+        utils.PATHS.experiment = "em2"
+
     if not utils.check_dirs(regenerate=regenerate):
         sys.exit(1)
 
-    print("-" * 80)
-    data.do(force=force)
-    print("-" * 80)
-    flux.do()
-    print("-" * 80)
+    if args.experiment in ("mobility", "em3"):
+        print("-" * 80)
+        data.do_ine_mobility(force=force)
+        print("-" * 80)
+        flux.do_mobility()
+        print("-" * 80)
+    else:
+        print("-" * 80)
+        data.do_covid_mobility(force=force)
+        print("-" * 80)
+        flux.do_covid()
+        print("-" * 80)
 
 
 if __name__ == "__main__":
