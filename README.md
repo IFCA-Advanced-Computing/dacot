@@ -1,7 +1,7 @@
 # dacot: DataCOVID Transformer
 
 `dacot` genera nuevos datasets a partir de los datos disponibles en los
-[Estudios de movilidad a partir de la telefonía móvil"](https://www.ine.es/experimental/movilidad/experimental_em.htm)
+[Estudios de movilidad a partir de la telefonía móvil](https://www.ine.es/experimental/movilidad/experimental_em.htm)
 realizados por el Instituto Nacional de Estadística. Se recomienda leer y
 entender la información suministrada por el INE para entender el alcance de
 dichos estudios.
