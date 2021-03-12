@@ -6,6 +6,12 @@ realizados por el Instituto Nacional de Estadística. Se recomienda leer y
 entender la información suministrada por el INE para entender el alcance de
 dichos estudios.
 
+Se pueden visualizar los datos en [este mapa](https://flowmap.blue/from-url?flows=https://raw.githubusercontent.com/IFCA/dacot/main/data/output/flowmap-blue/flows.csv&locations=https://raw.githubusercontent.com/IFCA/dacot/main/data/output/flowmap-blue/locations.csv&f=13&col=BurgYl&c=0&bo=100).
+
+<a href="https://flowmap.blue/from-url?flows=https://raw.githubusercontent.com/IFCA/dacot/main/data/output/flowmap-blue/flows.csv&locations=https://raw.githubusercontent.com/IFCA/dacot/main/data/output/flowmap-blue/locations.csv&f=13&col=BurgYl&c=0&bo=100">
+   <img alt="map" src="https://github.com/IFCA/dacot/blob/main/images/map.png">
+</a>
+
 Cada ejecución de `dacot` genera un nuevo directorio dentro de `data/output/`
 con el formato `output_ESTUDIO_YYYYMMDD-VERSION` donde:
 
