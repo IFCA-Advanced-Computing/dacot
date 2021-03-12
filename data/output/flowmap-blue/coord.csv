@@ -1,53 +1,53 @@
-id,name,lat,lon
-Albacete,"Albacete, Spain",38.83333,-2
-Alicante/Alacant,"Alicante, Spain",38.5,-0.5
-Almería,"Almería, Spain",37.16667,-2.33333
-Araba/Álava,"Álava, Spain",42.83333,-2.75
-Asturias,"Asturias, Spain",43.33333,-6
-Badajoz,"Badajoz, Spain",38.66667,-6.16667
-"Balears, Illes","Balearic Islands, Spain",39.5,3
-Barcelona,"Barcelona, Spain",41.45,2.08333
-Bizkaia,"Biscay, Spain",43.25,-2.98333
-Burgos,"Burgos, Spain",42.38333,-3.66667
-Cantabria,"Cantabria, Spain",43.33333,-4
-Castellón/Castelló,"Castellón, Spain",40.16667,-0.16667
-Ceuta,"Ceuta, Spain",35.88667,-5.3
-Ciudad Real,"Ciudad Real, Spain",39,-4
-"Coruña, A","Alicante, Spain",38.5,-0.5
-Cuenca,"Cuenca, Spain",40,-2
-Cáceres,"Cáceres, Spain",39.66667,-6
-Cádiz,"Cádiz, Spain",36.5,-5.75
-Córdoba,"Córdoba, Spain",38,-4.83333
-Gipuzkoa,"Gipuzkoa, Spain",43.16667,-2.16667
-Girona,"Girona, Spain",42.16667,2.66667
-Granada,"Granada, Spain",37.25,-3.25
-Guadalajara,"Guadalajara, Spain",40.83333,-2.5
-Huelva,"Huelva, Spain",37.66667,-7
-Huesca,"Huesca, Spain",42.16667,-0.16667
-Jaén,"Jaén, Spain",38,-3.5
-León,"León, Spain",42.634283,-5.971092
-Lleida,"Lleida, Spain",42,1.16667
-Lugo,"Lugo, Spain",43,-7.5
-Madrid,"Madrid, Spain",40.41889,-3.69194
-Melilla,"Melilla, Spain",35.2825,-2.9475
-Murcia,"Murcia, Spain",38,-1.83333
-Málaga,"Málaga, Spain",36.71667,-4.41667
-Navarra,"Navarre, Spain",42.81667,-1.65
-Ourense,"Ourense, Spain",42.16667,-7.5
-Palencia,"Palencia, Spain",42.41667,-4.5
-"Palmas, Las",Not found
-Pontevedra,"Pontevedra, Spain",42.5,-8.5
-"Rioja, La","La Rioja, Spain",42.25,-2.5
-Salamanca,"Salamanca, Spain",40.83333,-6
-Santa Cruz de Tenerife,Not found
-Segovia,"Segovia, Spain",40.95,-4.11667
-Sevilla,"Seville, Spain",37.5,-5.5
-Soria,"Soria, Spain",41.66667,-2.66667
-Tarragona,"Tarragona, Spain",41.16667,1
-Teruel,"Teruel, Spain",40.34361,-1.10722
-Toledo,"Toledo, Spain",39.86667,-4.03333
-Valencia/València,"Valencia, Spain",39.33333,-0.83333
-Valladolid,"Valladolid, Spain",41.58333,-4.66667
-Zamora,"Zamora, Spain",41.75,-6
-Zaragoza,"Zaragoza, Spain",41.58333,-1
-Ávila,"Ávila, Spain",40.58333,-5
+name,lat,lon
+Albacete,38.72278275,-1.954152527278563
+Alicante/Alacant,38.3653397,-0.7484465269899306
+Almería,37.2983754,-2.1881501121101934
+Araba/Álava,42.844072249999996,-2.6820829322126283
+Asturias,43.271087800000004,-5.854145744587305
+Badajoz,38.696296000000004,-6.220960171522741
+"Balears, Illes",39.6134018,2.8804305326400756
+Barcelona,41.75786995,2.031182036159852
+Bizkaia,43.238482000000005,-2.85163163999482
+Burgos,42.3247142,-3.676538911296607
+Cantabria,43.1595664,-4.0878382
+Castellón/Castelló,40.25185675,-0.061505110105748245
+Ceuta,35.888361,-5.304138
+Ciudad Real,38.95975095,-3.88284645910809
+"Coruña, A",43.0565609,-8.5296941
+Cuenca,39.9424584,-2.153560838424455
+Cáceres,39.759172500000005,-6.1379457147709005
+Cádiz,36.5262663,-5.900881981505148
+Córdoba,37.9567116,-4.847724055949036
+Gipuzkoa,43.144527800000006,-2.2037955488327494
+Girona,42.0731358,2.8357142522894936
+Granada,37.388830999999996,-3.2393183880901955
+Guadalajara,40.7399963,-2.505930025884726
+Huelva,37.5019895,-6.922798496554098
+Huesca,42.13606145,-0.029802662719165485
+Jaén,37.9557275,-3.492055612037218
+León,42.63414505,-5.971415104539984
+Lleida,42.06810015,1.1798873404984742
+Lugo,43.0462247,-7.4739921
+Madrid,40.5248319,-3.771562775451811
+Melilla,35.292906,-2.9507198551536247
+Murcia,38.0634325,-1.6718004905591708
+Málaga,36.7960087,-4.547378378829243
+Navarra,42.61254875,-1.830787673361753
+Ourense,42.1968459,-7.6114105
+Palencia,42.409632200000004,-4.616100410293067
+"Palmas, Las",27.954734600000002,-15.596105738038416
+Pontevedra,42.6075172,-8.4714942
+"Rioja, La",42.2814642,-2.482804975070473
+Salamanca,40.76655815,-6.021764950837538
+Santa Cruz de Tenerife,28.286398900000002,-16.796011808910734
+Segovia,41.10855065,-4.182979645988134
+Sevilla,37.5192586,-5.6504755124983
+Soria,41.60125045,-2.721938035449954
+Tarragona,41.052951199999995,0.6270262248933516
+Teruel,40.6005259,-0.9229281754890265
+Toledo,39.7883415,-4.103027048448444
+Valencia/València,39.33420575,-0.7973474394744401
+Valladolid,41.7030484,-4.696950879035127
+Zamora,41.6857693,-5.942315018340977
+Zaragoza,41.84004695,-1.1695090092447569
+Ávila,40.62327675,-4.835420185671541
