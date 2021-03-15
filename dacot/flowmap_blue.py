@@ -1,5 +1,5 @@
 """
-Add the following to the map url to customize it nice
+Add the following to the map url to customize it nicely
 ?f=13&col=BurgYl&c=0&bo=100
 
 f: fade transparency, c: clustering, col: color, bo: base map transparency
@@ -15,14 +15,31 @@ import requests
 
 base_dir = pathlib.Path('/home/iheredia/ignacio/covid/dacot/data')
 
-# Load flows
+em2_dir = base_dir / "output" / "output_em2_20210224-1.0.1.dev4"
+em3_dir = base_dir / "output" / "output_em3_20210315-1.0.1.dev8"
+joined_dir = base_dir / "output" / "output_em2+em3"
 
-flows_intra = pd.read_csv(
-    base_dir / "output" / "output_em2_20210224-1.0.1.dev4" / "province_flux_intra.csv"
-)
-flows_inter = pd.read_csv(
-    base_dir / "output" / "output_em2_20210224-1.0.1.dev4" / "province_flux_inter.csv"
-)
+# Load flows and create combined dataset if needed
+if not joined_dir.exists():
+    joined_dir.mkdir()
+    flows_intra = pd.DataFrame([])
+    flows_inter = pd.DataFrame([])
+    for d in [em2_dir, em3_dir]:
+        f1 = pd.read_csv(d / "province_flux_intra.csv")
+        f2 = pd.read_csv(d / "province_flux_inter.csv")
+        flows_intra = pd.concat([flows_intra, f1])
+        flows_inter = pd.concat([flows_inter, f2])
+    flows_intra.to_csv(
+        joined_dir / "province_flux_intra.csv",
+        index=False,
+    )
+    flows_inter.to_csv(
+        joined_dir / "province_flux_inter.csv",
+        index=False,
+    )
+else:
+    flows_intra = pd.read_csv(joined_dir / "province_flux_intra.csv")
+    flows_inter = pd.read_csv(joined_dir / "province_flux_inter.csv")
 
 flows_intra['province destination'] = flows_intra['province']
 flows_intra['province id destination'] = flows_intra['province id']
@@ -31,13 +48,11 @@ flows_intra = flows_intra.rename(columns={'province': 'province origin',
 
 flows = pd.concat([flows_inter, flows_intra])
 
-# Create coordinates file for locations
-
-
-def create_coord_file():
-    names = sorted(set(flows['province origin']))
-
+# Load coordinates of places
+f = base_dir / "output" / "flowmap-blue" / "coord.csv"
+if not f.exists():
     lat, lon = [], []
+    names = sorted(set(flows['province origin']))
     for province in names:
         url = 'https://nominatim.openstreetmap.org/search'
         if province in ['Ceuta', 'Melilla']:
@@ -49,17 +64,13 @@ def create_coord_file():
         lat.append(r['lat'])
         lon.append(r['lon'])
 
-    df = pd.DataFrame({'name': names, 'lat': lat, 'lon': lon})
-    df.to_csv(
+    coord = pd.DataFrame({'name': names, 'lat': lat, 'lon': lon})
+    coord.to_csv(
         base_dir / "output" / "flowmap-blue" / "coord.csv",
         index=False,
     )
-
-
-f = base_dir / "output" / "flowmap-blue" / "coord.csv"
-if not f:
-    create_coord_file()
-coord = pd.read_csv(f)
+else:
+    coord = pd.read_csv(f)
 
 # Save locations
 locations = flows.groupby(['province origin', 'province id origin']).size().reset_index()
