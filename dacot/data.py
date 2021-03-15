@@ -29,10 +29,7 @@ PATHS = utils.PATHS
 URLS_COVID = ["https://www.ine.es/covid/datos_disponibles.zip"]
 URLS_INE = [
     "https://www.ine.es/experimental/movilidad/"
-    "movilidad_cotidiana_junio_octubre.zip",
-
-    "https://www.ine.es/experimental/movilidad/"
-    "movilidad_cotidiana_noviembre.zip",
+    "movilidad_cotidiana_junio_diciembre.zip"
 ]
 
 
@@ -135,20 +132,26 @@ def _prepare_ine():
                 zf.extractall(tmpdir)
 
         # Extract individual zip files
-        for f in os.listdir(tmpdir):
-            if not f.endswith(".zip"):
-                continue
-
-            f = os.path.join(tmpdir, f)
+        for f in tmpdir.glob('**/*.zip'):
             with zipfile.ZipFile(f) as zf:
                 zf.extractall(tmpdir)
 
-        # Now prepare output
+        # Files in (Noviembre, Diciembre) are organized differently
+        for m in ['Noviembre', 'Diciembre']:
+            monthdir = tmpdir / f'{m} 2020'
+            for f in monthdir.glob('*.zip'):
+                with zipfile.ZipFile(f) as zf:
+                    for zip_info in zf.infolist():
+                        if zip_info.filename[-1] == '/':
+                            continue
+                        zip_info.filename = os.path.basename(zip_info.filename)
+                        zf.extract(zip_info, monthdir)
 
+        # Now prepare output
         outdir = tmpdir / PATHS.outdir.name
         outdir.mkdir()
 
-        r = re.compile(r".*_([0-9]{2}[0-9]{2})\.xlsx$")
+        r = re.compile(r".*Movilidad Cotidiana-Flujos Origen-Destino \+15 personas_([0-9]{4})\.xlsx$")
 
         # if we use the generator we will get also the new files being created
         # therefore the loop will fail.
