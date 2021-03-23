@@ -15,38 +15,14 @@ import requests
 
 base_dir = pathlib.Path('/home/iheredia/ignacio/covid/dacot/data')
 
-em2_dir = base_dir / "output" / "output_em2_20210224-1.0.1.dev4"
-em3_dir = base_dir / "output" / "output_em3_20210315-1.0.1.dev8"
-joined_dir = base_dir / "output" / "output_em2+em3"
+em2_dir = base_dir / "output" / "output_em2_20210323-1.0.1.dev8"
+em3_dir = base_dir / "output" / "output_em3_20210323-1.0.1.dev8"
 
 # Load flows and create combined dataset if needed
-if not joined_dir.exists():
-    joined_dir.mkdir()
-    flows_intra = pd.DataFrame([])
-    flows_inter = pd.DataFrame([])
-    for d in [em2_dir, em3_dir]:
-        f1 = pd.read_csv(d / "province_flux_intra.csv")
-        f2 = pd.read_csv(d / "province_flux_inter.csv")
-        flows_intra = pd.concat([flows_intra, f1])
-        flows_inter = pd.concat([flows_inter, f2])
-    flows_intra.to_csv(
-        joined_dir / "province_flux_intra.csv",
-        index=False,
-    )
-    flows_inter.to_csv(
-        joined_dir / "province_flux_inter.csv",
-        index=False,
-    )
-else:
-    flows_intra = pd.read_csv(joined_dir / "province_flux_intra.csv")
-    flows_inter = pd.read_csv(joined_dir / "province_flux_inter.csv")
-
-flows_intra['province destination'] = flows_intra['province']
-flows_intra['province id destination'] = flows_intra['province id']
-flows_intra = flows_intra.rename(columns={'province': 'province origin',
-                                          'province id': 'province id origin'})
-
-flows = pd.concat([flows_inter, flows_intra])
+flows = pd.DataFrame([])
+for d in [em2_dir, em3_dir]:
+    f = pd.read_csv(d / "province_flux.csv")
+    flows = pd.concat([flows, f])
 
 # Load coordinates of places
 f = base_dir / "output" / "flowmap-blue" / "coord.csv"

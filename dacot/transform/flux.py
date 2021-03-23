@@ -290,15 +290,25 @@ def do_covid():
     print(f"Saving concatenated data to {PATHS.outdir}")
     df = pandas.concat(agg_flux)
     df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux.csv", index=False)
+    df.to_csv(PATHS.outdir / "area_flux.csv", index=False)
 
-    df = pandas.concat(agg_flux_intra)
-    df = df.sort_values(["date", "province"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
+    df_intra = pandas.concat(agg_flux_intra)
+    df_intra = df_intra.sort_values(["date", "province"]).reset_index(drop=True)
+    df_intra.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
 
-    df = pandas.concat(agg_flux_inter)
-    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
+    df_inter = pandas.concat(agg_flux_inter)
+    df_inter = df_inter.sort_values(["date", "province origin"]).reset_index(drop=True)
+    df_inter.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
+
+    df_intra = df_intra.rename(columns={'province': 'province origin',
+                                        'province id': 'province id origin'})
+    df_intra['province destination'] = df_intra['province origin']
+    df_intra['province id destination'] = df_intra['province id origin']
+    df_full = pandas.concat([df_inter, df_intra])
+    df_full = df_full.sort_values(by=['date',
+                                      'province origin',
+                                      'province destination'])
+    df_full.to_csv(PATHS.outdir / "province_flux.csv", index=False)
 
 
 def do_mobility():
@@ -341,12 +351,22 @@ def do_mobility():
     print(f"Saving concatenated data to {PATHS.outdir}")
     df = pandas.concat(agg_flux)
     df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux.csv", index=False)
+    df.to_csv(PATHS.outdir / "area_flux.csv", index=False)
 
-    df = pandas.concat(agg_flux_intra)
-    df = df.sort_values(["date", "province"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
+    df_intra = pandas.concat(agg_flux_intra)
+    df_intra = df_intra.sort_values(["date", "province"]).reset_index(drop=True)
+    df_intra.to_csv(PATHS.outdir / "province_flux_intra.csv", index=False)
 
-    df = pandas.concat(agg_flux_inter)
-    df = df.sort_values(["date", "province origin"]).reset_index(drop=True)
-    df.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
+    df_inter = pandas.concat(agg_flux_inter)
+    df_inter = df_inter.sort_values(["date", "province origin"]).reset_index(drop=True)
+    df_inter.to_csv(PATHS.outdir / "province_flux_inter.csv", index=False)
+
+    df_intra = df_intra.rename(columns={'province': 'province origin',
+                                        'province id': 'province id origin'})
+    df_intra['province destination'] = df_intra['province origin']
+    df_intra['province id destination'] = df_intra['province id origin']
+    df_full = pandas.concat([df_inter, df_intra])
+    df_full = df_full.sort_values(by=['date',
+                                      'province origin',
+                                      'province destination'])
+    df_full.to_csv(PATHS.outdir / "province_flux.csv", index=False)
